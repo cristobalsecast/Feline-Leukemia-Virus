@@ -1,0 +1,6 @@
+##Trimming with Fastp
+cd /home/cristobal/raw_data/Cuchi1/
+fastp --in1 Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_1.fq.gz --out1 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_1.fq.gz --in2 Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_2.fq.gz --out2 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_2.fq.gz
+echo
+## Assembling with metaspades
+metaspades.py -t 6 -1 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_1.fq.gz -2 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_2.fq.gz -o metaspadesoutput --memory 50

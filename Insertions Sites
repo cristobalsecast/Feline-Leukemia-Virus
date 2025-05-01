@@ -1,22 +1,18 @@
-## convert to universal coding. Becaus it was written in excel
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# dos2unix insert_final.txt
+# It is in this path (cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold#
 
-## Bedtools require a bed file, so I have to change the extension 
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# mv insert_final.txt insert_final.bed
+## convert to universal coding. Becaus it was written in excel and change the extension to bed file
+dos2unix insert_final.txt && mv insert_final.txt insert_final.bed
 
-## Bedtools run, it is using a gtf, to reduce the number observations
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# bedtools intersect -a genomic.gtf -b insert_final.bed > filtered_output.gtf
-  
 ## It helps to put all of them in the same column
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# awk '{ if ($2 < $3) print $1"\t"$2"\t"$3; else print $1"\t"$3"\t"$2 }' insert_final.bed > insert_final2.bed
+ awk '{ if ($2 < $3) print $1"\t"$2"\t"$3; else print $1"\t"$3"\t"$2 }' insert_final.bed > insert_final2.bed
 
-##The correct one
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# bedtools intersect -a genomic.gtf -b insert_final2.bed > filtered_output.gtf
+## Run BedTools to identify genes associated to those insertion points
+bedtools intersect -a genomic.gtf -b insert_final2.bed > filtered_output.gtf
 
 ### It extracts only column from gene_id
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# awk -F "\t" '{if ($3 == "gene") {match($9, /gene_id "([^"]+)"/, m); if (m[1] != "") print $1, m[1]}}' filtered_output.gtf > only_genes.txt
+awk -F "\t" '{if ($3 == "gene") {match($9, /gene_id "([^"]+)"/, m); if (m[1] != "") print $1, m[1]}}' filtered_output.gtf > only_genes.txt
 
 ### This delete the LOCI, because are not considered in the Chiu results.
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# awk '!/LOC/' only_genes.txt > temp && mv temp only_genes.txt
+awk '!/LOC/' only_genes.txt > temp && mv temp only_genes.txt
 
-(cristobal) root@LAPTOP-KHQSUE4A:/home/Genes/9.3/gtf_fold# awk '{print $2}' only_genes.txt > temp && mv temp only_genes.txt
+awk '{print $2}' only_genes.txt > temp && mv temp only_genes.txt

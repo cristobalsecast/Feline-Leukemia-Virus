@@ -1,6 +1,23 @@
 ##Trimming with Fastp
-cd /home/cristobal/raw_data/Cuchi1/
-fastp --in1 Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_1.fq.gz --out1 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_1.fq.gz --in2 Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_2.fq.gz --out2 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_2.fq.gz
-echo
-## Assembling with metaspades
-metaspades.py -t 6 -1 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_1.fq.gz -2 fastp_Cuchi1_FDPL220128337-1a_HYJVMDSX2_L3_2.fq.gz -o metaspadesoutput --memory 50
+fastp --in1 <input1.fq.gz> --out1 <fastp_output1.fq.gz> --in2 <input2.fq.gz> --out2 <fastp_output2.fq.gz>
+
+## Assembling with MEGAHIT
+megahit -1 <fastp_output1.fq.gz> -2 <fastp_output2.fq.gz> -o <megahit_output>
+
+## Assembling with Flye
+flye --nano-raw <reads.fq.gz> --out-dir <flye_output> 
+
+## Mapping with Minimap2
+minimap2 -ax map-ont <reference.fasta> <contigs.fq.gz> > <aligned.sam>
+samtools view -b -F 4 <aligned.sam> > <mapped.bam>
+samtools fasta <mapped.bam> > <mapped.fasta>
+
+## iSNVs analysis
+bwa index <reference.fasta>
+bwa mem -t 8 reference.fasta <reads_1.fq.gz> <reads_2.fq.gz> | samtools sort -o <aligned.sorted.bam>
+ivar consensus -p <consensus_output.fa> -q 20 -t 0.6 -m 10 -n N < aligned.pileup
+samtools mpileup -A -d 0 -Q 20 -B -f <consensus_output.fa> aligned_to_consensus.bam | \
+ivar variants -p variants_from_consensus.tsv -q 10 -t 0.01 -m 10
+
+
+
